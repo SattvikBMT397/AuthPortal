@@ -1,12 +1,6 @@
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-
-interface User {
-  username: string;
-  email: string;
-  roleType: string;
-  // Add other user properties here
-}
+import { createContext, useContext, useState, ReactNode } from 'react';
+import {User} from '../utils/interface'
 
 interface AuthContextType {
   currentUser: User | null;

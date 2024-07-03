@@ -103,14 +103,14 @@ const Profile: React.FC = () => {
             onChange={handleChange}
             fullWidth
           />
-          <TextField
+          {/* <TextField
             margin="dense"
             label="Role Type"
             name="roleType"
             value={editedUser?.roleType}
             onChange={handleChange}
             fullWidth
-          />
+          /> */}
           <TextField
             margin="dense"
             label="Name"

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import {useState} from 'react';
+import { useForm, Controller } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { TextField, Button, Select, MenuItem, FormControl, InputLabel, Container } from '@mui/material';
+import { TextField, Button, Select, MenuItem, FormControl, InputLabel, Container, Box, Paper, Typography } from '@mui/material';
 import { getAllUsers } from '../utils/localForage';
 import { useAuth } from '../Contexts/AuthContext';
 import { ToastContainer, toast } from 'react-toastify';
@@ -9,23 +10,17 @@ import Loader from '../utils/Loader';
 import { UserForm } from '../utils/interface';
 
 const Login: React.FC = () => {
-  const [form, setForm] = useState<Omit<UserForm, 'id'>>({ username: '', password: '', roleType: 'user', name: '', address: '', phoneNumber: '' });
+  const { control, handleSubmit, formState: { errors } } = useForm<Omit<UserForm, 'id'>>();
   const { login } = useAuth();
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | { name?: string | undefined; value: unknown }>) => {
-    const { name, value } = e.target;
-    setForm({ ...form, [name!]: value });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: Omit<UserForm, 'id'>) => {
     setLoading(true);
     setTimeout(async () => {
       const users = await getAllUsers();
-      const user = users.find(u => u.username === form.username);
-      if (user && user.password === form.password && user.roleType === form.roleType) {
+      const user = users.find(u => u.username === data.username);
+      if (user && user.password === data.password && user.roleType === data.roleType) {
         login(user);
         toast.success('Login Successful!', {
           position: "top-right",
@@ -37,7 +32,7 @@ const Login: React.FC = () => {
           draggable: true,
           pauseOnHover: true,
         });
-        if (form.roleType === 'admin') {
+        if (data.roleType === 'admin') {
           navigate('/admin');
         } else {
           navigate(`/profile/${user.id}`);
@@ -59,27 +54,75 @@ const Login: React.FC = () => {
   };
 
   return (
-    <Container>
-      <h2>Login</h2>
-      {loading ? (
-        <Loader />
-      ) : (
-        <form onSubmit={handleSubmit}>
-          <TextField required label="Username" name="username" value={form.username} onChange={handleChange} fullWidth />
-          <TextField required label="Password" name="password" type="password" value={form.password} onChange={handleChange} fullWidth />
-          <FormControl fullWidth>
-            <InputLabel>Role Type</InputLabel>
-            <Select name="roleType" value={form.roleType} onChange={handleChange}>
-              <MenuItem value="admin">Admin</MenuItem>
-              <MenuItem value="user">User</MenuItem>
-            </Select>
-          </FormControl>
-          <Button type="submit" variant="contained" color="primary">Login</Button>
-        </form>
-      )}
-      <ToastContainer />
+    <Container maxWidth="sm" style={{ marginTop: '5rem' }}>
+      <Paper elevation={3} style={{ padding: '2rem' }}>
+        <Typography variant="h4" component="h2" align="center" gutterBottom>
+          Login
+        </Typography>
+        {loading ? (
+          <Loader />
+        ) : (
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Box mb={2}>
+              <Controller
+                name="username"
+                control={control}
+                defaultValue=""
+                rules={{ required: 'Username is required' }}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Username"
+                    fullWidth
+                    error={!!errors.username}
+                    helperText={errors.username ? errors.username.message : ''}
+                  />
+                )}
+              />
+            </Box>
+            <Box mb={2}>
+              <Controller
+                name="password"
+                control={control}
+                defaultValue=""
+                rules={{ required: 'Password is required' }}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Password"
+                    type="password"
+                    fullWidth
+                    error={!!errors.password}
+                    helperText={errors.password ? errors.password.message : ''}
+                  />
+                )}
+              />
+            </Box>
+            <Box mb={2}>
+              <Controller
+                name="roleType"
+                control={control}
+                defaultValue="user"
+                render={({ field }) => (
+                  <FormControl fullWidth>
+                    <InputLabel>Role Type</InputLabel>
+                    <Select {...field}>
+                      <MenuItem value="admin">Admin</MenuItem>
+                      <MenuItem value="user">User</MenuItem>
+                    </Select>
+                  </FormControl>
+                )}
+              />
+            </Box>
+            <Button type="submit" variant="contained" color="primary" fullWidth>
+              Login
+            </Button>
+          </form>
+        )}
+        <ToastContainer />
+      </Paper>
     </Container>
-  );
+  )
 };
 
 export default Login;
