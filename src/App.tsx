@@ -7,8 +7,9 @@ import AdminDashboard from './pages/AdminDashboard';
 import { useAuth } from './Contexts/AuthContext';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { PrivateRouteProps } from './utils/interface';
 
-const PrivateRoute = ({ children, role }) => {
+const PrivateRoute = ({ children, role }:PrivateRouteProps) => {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
 

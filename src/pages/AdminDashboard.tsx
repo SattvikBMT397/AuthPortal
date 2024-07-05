@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import {
   Container,
   List,
-  ListItem,
   ListItemText,
   Button,
   Dialog,
@@ -19,6 +18,7 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import { getAllUsers,updateUser } from '../utils/localForage';
 import { UserForm } from '../utils/interface';
+
 
 const AdminDashboard = () => {
   const [users, setUsers] = useState<UserForm[]>([]);
@@ -45,8 +45,8 @@ const AdminDashboard = () => {
   };
 
   const handleSave = async () => {
-    await updateUser(selectedUser.username, editedUser);
-    setUsers(users.map(user => (user.username === selectedUser.username ? editedUser : user) as UserForm));
+    await updateUser(selectedUser!.id, editedUser!);
+    setUsers(users.map(user => (user.username === selectedUser!.username ? editedUser : user) as UserForm));
     setOpen(false);
   };
   return(

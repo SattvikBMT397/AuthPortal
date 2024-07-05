@@ -8,6 +8,10 @@ export interface UserForm {
     address: string;
     phoneNumber: string;
   }
+  export interface PrivateRouteProps {
+    children: React.ReactNode;
+    role?: string;
+  }
   
   export interface User {
     id:number
